@@ -35,46 +35,42 @@ Para que serve:
 Enquanto o projeto está em `0.x`, ele é considerado "em construção". Uma sugestão para o MFE:
 `v1.0.0` quando os 5 projetos estiverem integrados e publicados.
 
-### Como publicar uma release neste repositório
+### Como as releases acontecem neste repositório (automático)
 
 O fluxo encaixa no Git Flow do projeto ([09](./09-fluxo-git.md)): **release = merge de `develop` em `main`**.
 
-```bash
-# 1. PR develop → main aprovado e mergeado
-git switch main && git pull
-
-# 2. Criar a release (a tag é criada junto), com notas geradas a partir dos PRs
-gh release create v0.1.0 --target main --title "v0.1.0 — Estrutura inicial do MFE" --generate-notes
-
-# 3. Conferir
-gh release view v0.1.0 --web
+```txt
+PR develop → main  ──(Danger mostra a prévia: "será publicada a release v0.3.0")──► merge
+      │
+      ▼  .github/workflows/release.yml (push em main)
+ 1. elizfab-rules next-version   → versão pelos commits desde a última tag
+ 2. gh release create vX.Y.Z --generate-notes   → tag + release com notas por categoria
+ 3. npm publish  @elizfab/danger-rules@X.Y.Z, @elizfab/shared-data@X.Y.Z   (GitHub Packages)
+ 4. docker push  ghcr.io/elizfab/mfe-elizabetefabri-portfolio:X.Y.Z e :latest
 ```
 
-Ou pela interface: **Releases → Create a new release → Choose a tag** (digite `v0.1.0`, "create new tag on publish")
-**→ Target: `main` → Generate release notes → Publish**.
-
-As notas são geradas a partir dos **PRs mergeados** desde a release anterior e agrupadas pelas categorias de
-`.github/release.yml`, que usam as labels `tipo:*`:
-
-| Label | Seção nas notas |
+| Commits desde a última tag | Próxima versão |
 | --- | --- |
-| `tipo:feat` | 🚀 Funcionalidades |
-| `tipo:fix` | 🐛 Correções |
-| `tipo:perf`, `tipo:refactor` | ⚡ Melhorias internas |
-| `tipo:docs` | 📚 Documentação |
-| `tipo:ci`, `tipo:build`, `tipo:test` | ⚙️ Build, CI e testes |
-| demais | 🧹 Outras mudanças |
+| só `docs`, `ci`, `chore`, `test`, `style` | nenhuma (sem release) |
+| algum `fix`, `perf`, `refactor`, `build`, `revert` | `PATCH` |
+| algum `feat` | `MINOR` |
+| algum `feat!` / `BREAKING CHANGE:` | `MAJOR` (em `0.x`, vira `MINOR`) |
 
-Você não precisa pôr essas labels à mão: **o Danger aplica `tipo:<tipo>` a partir do título do PR** (Conventional
-Commits). Por isso vale caprichar no título.
+**Promover para `1.0.0`** (ou forçar uma versão): **Actions → Release → Run workflow** e informe `1.0.0`.
+
+Release manual (se precisar, ex.: em outro repositório sem o workflow):
+
+```bash
+gh release create v0.1.0 --target main --title "v0.1.0" --generate-notes
+```
 
 ### Exercícios para aprender
 
-1. Depois do merge dos PRs #1 e #2 em `main`, publique a `v0.1.0` com `--generate-notes` e leia o resultado.
+1. Leia as notas da `v0.1.0` (primeira release automática) e compare com os PRs mergeados.
 2. Integre o PDI (primeiro remote real) e publique a `v0.2.0`. Compare as duas notas.
 3. Crie uma release **pre-release** (`gh release create v0.3.0-rc.1 --prerelease ...`) antes de um deploy arriscado.
 4. Anexe um artefato: `npx nx build shell && zip -r shell.zip dist/apps/shell && gh release upload v0.2.0 shell.zip`.
-5. Avançado: um workflow `on: release: types: [published]` que faz o deploy de produção.
+5. Avançado: adicionar ao `release.yml` o deploy de produção (ex.: Vercel/servidor) usando a imagem publicada.
 6. Avançado: automatizar versão e changelog com [release-please](https://github.com/googleapis/release-please),
    que lê os Conventional Commits e abre sozinho o PR de release.
 
@@ -88,13 +84,30 @@ NuGet...) ligados ao repositório/organização, e outros projetos os instalam.
 | **npm** | Uma lib, ex.: `@elizfab/shared-data` | `npm.pkg.github.com` |
 | **Container (Docker)** | Uma imagem, ex.: a API Go do Dose Certa | `ghcr.io/elizfab/dosecerta-api` |
 
-Ideias de uso neste ecossistema (ótimas para aprender):
+Pacotes publicados por este repositório (a cada release):
 
-1. **Imagens Docker dos backends Go** (Dose Certa, Suplementos, Caderno): um workflow faz `docker build` e
-   `docker push ghcr.io/elizfab/<projeto>-api:<versão>` a cada release. O deploy (Render, VPS) passa a baixar a imagem pronta.
-2. **Libs do MFE como pacote npm**: publicar `@elizfab/shared-data` e `@elizfab/shared-core` para que um **remote
-   externo** (ex.: Suplementos Store mantido privado — opção B do [relatório 03](./integracao/03-suplementos-store.md))
-   use os mesmos modelos e o mesmo contrato de tema sem copiar código.
+| Pacote | Tipo | Para quê |
+| --- | --- | --- |
+| `@elizfab/danger-rules` | npm | Regras de PR, padrões de repositório e CLI `elizfab-rules` para **todos** os repositórios da org ([12](./12-padroes-de-repositorio.md)) |
+| `@elizfab/shared-data` | npm | Modelos e dados do portfólio para **remotes externos** |
+| `ghcr.io/elizfab/mfe-elizabetefabri-portfolio` | container | Portfólio completo (shell + remotes) em nginx |
 
-Os dois exigem autenticação com token (`GITHUB_TOKEN` nos workflows, PAT localmente) e são um bom próximo passo
-depois das releases.
+Instalar um pacote npm da org (em qualquer projeto):
+
+```bash
+# .npmrc do projeto
+@elizfab:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+
+export NODE_AUTH_TOKEN=$(gh auth token)      # token com read:packages
+npm install -D @elizfab/danger-rules
+```
+
+> Mesmo pacotes públicos do GitHub Packages exigem um token para instalar. Nos workflows, use
+> `actions/setup-node` com `registry-url: https://npm.pkg.github.com` e `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`.
+
+Próximas ideias:
+
+1. **Imagens Docker dos backends Go** (Dose Certa, Suplementos, Caderno) em `ghcr.io/elizfab/<projeto>-api`.
+2. **`@elizfab/shared-core`** (contrato de tema e contexto do remote — issues #5 e #6) publicado junto, para remotes
+   externos como o Suplementos Store (opção B do [relatório 03](./integracao/03-suplementos-store.md)).
