@@ -1,0 +1,16 @@
+{
+  "name": "shared-data",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/shared/data/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": [
+    "type:data",
+    "scope:shared"
+  ],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

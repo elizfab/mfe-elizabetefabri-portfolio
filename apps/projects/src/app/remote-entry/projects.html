@@ -1,0 +1,35 @@
+<section class="projects">
+  <header>
+    <h1>Projetos</h1>
+    <p class="hint">Micro frontend <code>projects</code> · porta 4201</p>
+  </header>
+
+  <div class="filters" role="group" aria-label="Filtrar por categoria">
+    @for (category of categories; track category) {
+      <button type="button" [class.active]="filter() === category" (click)="filter.set(category)">
+        {{ category }}
+      </button>
+    }
+  </div>
+
+  <ul class="grid">
+    @for (project of projects(); track project.slug) {
+      <li class="card">
+        <span class="tag">{{ project.category }}</span>
+        <h2>{{ project.title }}</h2>
+        <p>{{ project.description }}</p>
+        <ul class="techs">
+          @for (tech of project.techs; track tech) {
+            <li>{{ tech }}</li>
+          }
+        </ul>
+        <div class="links">
+          <a [href]="project.repoUrl" target="_blank" rel="noopener">Repositório</a>
+          @if (project.demoUrl) {
+            <a [href]="project.demoUrl" target="_blank" rel="noopener">Demo</a>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+</section>

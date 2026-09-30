@@ -1,0 +1,19 @@
+.projects { display: grid; gap: 1.5rem; }
+.hint { color: var(--ef-muted, #6b7280); margin: 0; }
+.filters { display: flex; gap: .5rem; flex-wrap: wrap; }
+.filters button {
+  border: 1px solid var(--ef-border, #d1d5db); background: transparent; color: inherit;
+  padding: .4rem .9rem; border-radius: 999px; cursor: pointer;
+  &.active { background: var(--ef-primary, #7c3aed); border-color: transparent; color: #fff; }
+}
+.grid { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.card {
+  display: flex; flex-direction: column; gap: .5rem; padding: 1.25rem;
+  border: 1px solid var(--ef-border, #e5e7eb); border-radius: 12px; background: var(--ef-surface, #fff);
+  h2 { font-size: 1.1rem; margin: 0; }
+  p { margin: 0; flex: 1; }
+}
+.tag { font-size: .75rem; color: var(--ef-primary, #7c3aed); font-weight: 600; }
+.techs { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .35rem;
+  li { font-size: .75rem; padding: .15rem .5rem; border-radius: 6px; background: var(--ef-chip, #f3f4f6); } }
+.links { display: flex; gap: 1rem; a { color: var(--ef-primary, #7c3aed); } }
