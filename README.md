@@ -84,6 +84,8 @@ A documentação completa está em [`docs/`](./docs/README.md):
 7. [Comandos, build e deploy](./docs/07-comandos-build-deploy.md)
 8. [Troubleshooting](./docs/08-troubleshooting.md)
 9. [Fluxo Git, PRs automáticos e Danger](./docs/09-fluxo-git.md): `feature/<atividade>` → `develop` → `main`
+10. [**Integração de projetos existentes**](./docs/10-integracao-projetos-existentes.md): runbook item por item + [painel de prontidão](./docs/integracao/README.md) dos projetos 01–05
+11. [Releases e Packages](./docs/11-releases-e-packages.md)
 
 > Alternativa moderna ao Module Federation clássico: **Native Federation**
 > (`@angular-architects/native-federation`), com ESM nativo e esbuild, sem Webpack. O modelo
