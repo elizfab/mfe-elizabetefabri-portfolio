@@ -85,11 +85,11 @@ Todo repositório tem, na raiz:
 | R-06 | Responsável (assignee) | ⚠️ |
 | R-07 | Commits Conventional Commits | ⚠️ |
 | R-08 | **Segredos no diff** (tokens GitHub, AWS, chaves privadas, URI MongoDB com senha, `sk-…`) | ❌ |
-| R-09 | Arquivo novo ≥ 500 KB (aviso) / ≥ 5 MB (bloqueio) | ⚠️ / ❌ |
+| R-09 | Arquivo novo ≥ 500 KB (aviso) / ≥ 5 MB (bloqueio), exceto lockfiles | ⚠️ / ❌ |
 | R-10 | Dependências sem lockfile; `version` alterada à mão | ❌ / ⚠️ |
 | R-11 | `.only`/`fit`/`xit`/`debugger` (bloqueio); `console.log` em `src/`/`apps/` (aviso) | ❌ / ⚠️ |
 | R-12 | PR com mais de 1500 linhas | ⚠️ |
-| R-13 | PR de release: prévia da versão que será publicada | ℹ️ |
+| R-13 | PR de release: prévia da versão que será publicada; label `ignorar-release` (fica fora das notas) | ℹ️ |
 | R-14 | Workflows/dangerfile/`elizfab.json` alterados | ℹ️ |
 
 Este repositório tem ainda regras próprias de micro frontends (**M-01…M-07**, no `dangerfile.ts`): checklist de remote
@@ -134,7 +134,7 @@ A saída é uma tabela por repositório com o que falta e como corrigir (sai com
 1. Edite `packages/danger-rules/src/*` e os testes (`*.spec.ts`); rode `npx nx test danger-rules`.
 2. Atualize as tabelas deste documento.
 3. PR `feature/*` → `develop`, depois release (`develop → main`): o workflow publica a nova versão do pacote.
-4. Nos outros repositórios: `npm update @elizfab/danger-rules` (ou deixe o Dependabot abrir o PR).
+4. Nos outros repositórios: `npm update @elizfab/danger-rules` em uma branch `feature/atualiza-danger-rules`.
 
 > Mudanças que tornam um padrão **obrigatório** quebram PRs de repositórios existentes: prefira introduzir como
 > `warn`, dar tempo para adequação e só depois promover a `fail` — e registre isso nas notas da release.
