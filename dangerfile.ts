@@ -33,11 +33,32 @@ async function addedLines(file: string): Promise<string[]> {
     .map((l) => l.slice(1));
 }
 
+/** Aplica a label `tipo:<tipo>` do título (usada nas notas de release — .github/release.yml). */
+async function syncTypeLabel(title: string) {
+  const type = title.match(/^([a-z]+)/)?.[1];
+  if (!type) return;
+  const wanted = `tipo:${type}`;
+  const current = (pr as unknown as { labels?: { name: string }[] }).labels?.map((l) => l.name) ?? [];
+  const { owner, repo, number } = danger.github.thisPR;
+  try {
+    for (const label of current.filter((l) => l.startsWith('tipo:') && l !== wanted)) {
+      await danger.github.api.issues.removeLabel({ owner, repo, issue_number: number, name: label });
+    }
+    if (!current.includes(wanted)) {
+      await danger.github.api.issues.addLabels({ owner, repo, issue_number: number, labels: [wanted] });
+    }
+  } catch {
+    warn(`Não foi possível aplicar a label \`${wanted}\` (ela existe no repositório?).`);
+  }
+}
+
 async function run() {
   // ───────────────────────────── 1. Fluxo e nomenclatura (bloqueantes)
   validateFlow(head, base).forEach((e) => fail(e));
   if (base === 'develop') validateBranch(head).forEach((e) => fail(e));
-  validateTitle(pr.title).forEach((e) => fail(e));
+  const titleErrors = validateTitle(pr.title);
+  titleErrors.forEach((e) => fail(e));
+  if (!titleErrors.length) await syncTypeLabel(pr.title);
 
   // ───────────────────────────── 2. Descrição do PR
   const body = (pr.body ?? '').trim();

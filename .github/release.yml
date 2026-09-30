@@ -1,0 +1,20 @@
+# Categorias das notas geradas automaticamente em "Create release → Generate release notes"
+# (e em `gh release create --generate-notes`). As labels tipo:* são aplicadas pelo Danger a partir do título do PR.
+# Documentação: docs/11-releases-e-packages.md
+changelog:
+  exclude:
+    labels:
+      - ignorar-release
+  categories:
+    - title: 🚀 Funcionalidades
+      labels: [tipo:feat]
+    - title: 🐛 Correções
+      labels: [tipo:fix]
+    - title: ⚡ Melhorias internas
+      labels: [tipo:perf, tipo:refactor]
+    - title: 📚 Documentação
+      labels: [tipo:docs]
+    - title: ⚙️ Build, CI e testes
+      labels: [tipo:ci, tipo:build, tipo:test]
+    - title: 🧹 Outras mudanças
+      labels: ['*']

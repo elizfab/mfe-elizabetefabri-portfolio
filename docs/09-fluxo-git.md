@@ -131,6 +131,11 @@ Novos pushes na mesma branch **não** abrem outro PR: o workflow reaproveita o e
 | Commits fora de Conventional Commits | Histórico padronizado |
 | PR sem responsável | Rastreabilidade |
 
+### Automação de labels
+
+Com o título válido, o Danger aplica a label `tipo:<tipo>` (ex.: `tipo:feat`) e remove outras `tipo:*`. Essas labels
+organizam as notas de release ([11](./11-releases-e-packages.md)).
+
 ### Lembretes (`message`)
 
 - `mf.manifest.json` alterado → atualizar o manifesto de **produção**.
