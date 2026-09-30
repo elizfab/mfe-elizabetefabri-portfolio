@@ -1,0 +1,129 @@
+# Release automática a cada merge em main (PR develop → main):
+#   1. calcula a próxima versão (SemVer) pelos Conventional Commits desde a última tag v*
+#   2. cria a tag + GitHub Release com notas geradas (categorias em .github/release.yml)
+#   3. publica os pacotes npm no GitHub Packages (@elizfab/danger-rules, @elizfab/shared-data)
+#   4. publica a imagem Docker do portfólio no ghcr.io
+# Sem commits feat/fix/perf/refactor desde a última tag → não há release.
+# Versão forçada (ex.: 1.0.0): Actions → Release → Run workflow.
+# Documentação: docs/11-releases-e-packages.md
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão a publicar, sem "v" (ex.: 1.0.0). Vazio = calcular automaticamente.'
+        required: false
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Versão e release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Calcular versão
+        id: version
+        env:
+          FORCED: ${{ inputs.version }}
+        run: |
+          version="${FORCED:-$(node packages/danger-rules/src/cli.ts next-version)}"
+          if [ -z "$version" ]; then
+            echo "Sem commits que gerem release desde a última tag." >> "$GITHUB_STEP_SUMMARY"
+          elif git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+            echo "::error::A tag v$version já existe."; exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Criar tag e release
+        if: steps.version.outputs.version != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          gh release create "v$VERSION" --target "$GITHUB_SHA" --title "v$VERSION" --generate-notes
+          echo "🏷️ Release **v$VERSION** publicada: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/v$VERSION" >> "$GITHUB_STEP_SUMMARY"
+
+  npm:
+    name: Pacotes npm
+    needs: release
+    if: needs.release.outputs.version != ''
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          - packages/danger-rules
+          - packages/shared/data
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'npm'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@elizfab'
+
+      - run: npm ci
+
+      - name: Build e publicação
+        working-directory: ${{ matrix.package }}
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.release.outputs.version }}
+        run: |
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          npm run build
+          npm publish
+          echo "📦 $(node -p "require('./package.json').name")@$VERSION" >> "$GITHUB_STEP_SUMMARY"
+
+  docker:
+    name: Imagem Docker
+    needs: release
+    if: needs.release.outputs.version != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ needs.release.outputs.version }}
+            ghcr.io/${{ github.repository }}:latest
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.version=${{ needs.release.outputs.version }}
+            org.opencontainers.image.description=Portfólio de Elizabete Fabri em micro frontends (shell + remotes) servido por nginx
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - run: echo "🐳 ghcr.io/${{ github.repository }}:${{ needs.release.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
