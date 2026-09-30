@@ -62,7 +62,7 @@ Substitua pelos seus valores.
 
 | Item | Regra | Exemplo |
 | --- | --- | --- |
-| Nome do remote (`<nome>`) | kebab-case, inglês, sem prefixo `mfe-`/`app-`. É o nome da pasta, do projeto Nx, do `name` no webpack e da chave do manifesto. | `certificates` |
+| Nome do remote (`<nome>`) | Uma palavra, minúsculas, **sem hífen** (vira identificador do container do Module Federation). É o nome da pasta, do projeto Nx, do `name` no webpack e da chave do manifesto. | `certificates` |
 | Classe do componente (`<Classe>`) | PascalCase do nome | `Certificates` |
 | Porta | Próxima livre na faixa 4201–4299 (veja o mapa no [README](./README.md#mapa-de-portas)) | `4204` |
 | Rota no shell | Português, kebab-case (é o que aparece na URL) | `certificados` |
@@ -292,6 +292,9 @@ builder **Webpack**. Por isso há duas estratégias.
 ### C1 — Trazer o código para dentro do monorepo (recomendado)
 
 O projeto vira um remote como no cenário B, e o código dele é movido para `remote-entry/`.
+
+> Passo a passo **detalhado, item por item** (`I-01`…`I-16`), com os pré-requisitos de fundação e o diagnóstico de
+> cada projeto do ecossistema: [10 — Integração de projetos existentes](./10-integracao-projetos-existentes.md).
 
 1. Faça **todo o cenário B** com o nome do projeto (ex.: `health-card` → rota `/carteira-saude`).
 2. Copie o código de `<projeto>/frontend/src/app/` para `apps/<nome>/src/app/remote-entry/`
