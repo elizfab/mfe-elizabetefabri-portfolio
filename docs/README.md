@@ -17,6 +17,9 @@ projetos novos** sem quebrar o que já existe.
 | Rodar, testar, gerar build e publicar                               | [07 — Comandos, build e deploy](./07-comandos-build-deploy.md)    |
 | Resolver um erro                                                    | [08 — Troubleshooting](./08-troubleshooting.md)                   |
 | Criar branch, commitar, abrir PR e entender o Danger                | [09 — Fluxo Git, PRs automáticos e Danger](./09-fluxo-git.md)     |
+| **Integrar um projeto existente (01–05), item por item**            | [10 — Integração de projetos existentes](./10-integracao-projetos-existentes.md) |
+| Ver se cada projeto está pronto para integrar e o que falta         | [Painel de prontidão](./integracao/README.md)                     |
+| Entender e usar Releases e Packages do GitHub                       | [11 — Releases e Packages](./11-releases-e-packages.md)           |
 
 ## Resumo em 30 segundos
 
@@ -37,7 +40,12 @@ projetos novos** sem quebrar o que já existe.
 | `projects` | remote | 4201  | `/projetos`   |
 | `about`    | remote | 4202  | `/sobre`      |
 | `contact`  | remote | 4203  | `/contato`    |
-| próximo    | remote | 4204  | —             |
+| `carteira` (reservado)    | remote | 4204  | `/carteira-saude`      |
+| `dosecerta` (reservado)   | remote | 4205  | `/dose-certa`          |
+| `suplementos` (reservado) | remote | 4206  | `/suplementos-store`   |
+| `pdi` (reservado)         | remote | 4207  | `/pdi`                 |
+| `caderno` (reservado)     | remote | 4208  | `/caderno-inteligente` |
+| próximo                   | remote | 4209  | —                      |
 
 > Convenção: o MFE usa a faixa **4200–4299**. A faixa **60xx** continua reservada para os projetos
 > standalone do ecossistema (`carteira-saude` = 6010, `dose-certa` = 6011, ...), então não há conflito
