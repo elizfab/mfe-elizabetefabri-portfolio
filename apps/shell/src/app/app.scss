@@ -1,0 +1,13 @@
+:host { display: block; min-height: 100vh; }
+.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  padding: 1rem 1.5rem; border-bottom: 1px solid var(--ef-border);
+  background: var(--ef-surface); position: sticky; top: 0; z-index: 10;
+}
+.brand { font-weight: 700; font-size: 1.1rem; text-decoration: none; color: inherit;
+  span { color: var(--ef-primary); } }
+nav { display: flex; gap: .25rem; flex-wrap: wrap;
+  a { text-decoration: none; color: inherit; padding: .4rem .75rem; border-radius: 8px;
+    &:hover { background: var(--ef-chip); }
+    &.active { background: var(--ef-primary); color: #fff; } } }
+.content { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }

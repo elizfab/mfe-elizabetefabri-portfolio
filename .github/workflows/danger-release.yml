@@ -1,0 +1,35 @@
+# Danger nos PRs de release (develop → main) a cada novo commit em develop.
+# Separado do danger.yml para que o filtro de branch base não gere checks "skipped" nos PRs de feature.
+name: Danger (release)
+
+on:
+  pull_request:
+    types: [synchronize]
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  statuses: write
+
+jobs:
+  danger:
+    name: Danger
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - run: npm ci
+
+      - run: npx danger ci --failOnErrors
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

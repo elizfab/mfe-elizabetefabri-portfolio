@@ -1,0 +1,5 @@
+{
+	"about": "http://localhost:4202/remoteEntry.js",
+	"contact": "http://localhost:4203/remoteEntry.js",
+	"projects": "http://localhost:4201/remoteEntry.js"
+}

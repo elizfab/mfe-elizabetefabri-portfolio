@@ -1,0 +1,26 @@
+# Valida o nome de qualquer branch enviada ao repositório.
+# Só "feature/<nome-da-atividade>" é aceito (além de main e develop).
+# O ruleset "Nomenclatura de branches" já impede criar outros nomes no GitHub;
+# este workflow é a segunda barreira e dá a mensagem de erro explicando o padrão.
+name: Branch name
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  branch-name:
+    name: Branch name
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: packages/danger-rules
+
+      - name: Validar feature/<nome-da-atividade>
+        run: node packages/danger-rules/src/cli.ts branch "$GITHUB_REF_NAME"

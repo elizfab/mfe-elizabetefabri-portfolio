@@ -1,0 +1,40 @@
+{
+  "name": "@elizfab/danger-rules",
+  "version": "0.0.0",
+  "description": "Regras de PR (Danger), nomenclatura de branches/títulos, padrões de repositório e versionamento da organização elizfab.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "elizfab-rules": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && node -e \"require('fs').writeFileSync('dist/package.json', JSON.stringify({ type: 'commonjs' }))\"",
+    "test": "node src/naming.spec.ts && node src/version.spec.ts && node src/standards.spec.ts"
+  },
+  "peerDependencies": {
+    "danger": ">=12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elizfab/mfe-elizabetefabri-portfolio.git",
+    "directory": "packages/danger-rules"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "license": "UNLICENSED"
+}

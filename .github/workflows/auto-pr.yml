@@ -1,0 +1,105 @@
+# A cada push em feature/*:
+#   1. valida o nome da branch;
+#   2. abre o PR feature/* → develop se ainda não existir (título e descrição gerados);
+#   3. roda o Danger no PR.
+#
+# PRs criados com o GITHUB_TOKEN não disparam outros workflows (regra do GitHub), por isso o Danger
+# roda aqui mesmo, montando o evento do PR manualmente. O CI roda pelo evento de push (ci.yml).
+name: Auto PR
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  statuses: write
+
+concurrency:
+  group: auto-pr-${{ github.ref }}
+
+env:
+  BASE_BRANCH: develop
+
+jobs:
+  pull-request:
+    name: Abrir PR
+    runs-on: ubuntu-latest
+    outputs:
+      number: ${{ steps.pr.outputs.number }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Validar nome da branch
+        run: node packages/danger-rules/src/cli.ts branch "$GITHUB_REF_NAME"
+
+      - name: Criar ou localizar PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          number=$(gh pr list --head "$BRANCH" --base "$BASE_BRANCH" --state open --json number --jq '.[0].number // empty')
+
+          if [ -z "$number" ]; then
+            if [ "$(git rev-list --count "origin/$BASE_BRANCH..HEAD")" = "0" ]; then
+              echo "Branch sem commits novos em relação a $BASE_BRANCH; nada a abrir."
+              exit 0
+            fi
+
+            title=$(node packages/danger-rules/src/cli.ts title-from-branch "$BRANCH")
+            {
+              echo "## Resumo"
+              echo
+              echo "<!-- TODO: descreva o que muda e por quê -->"
+              echo
+              echo "## Commits"
+              echo
+              git log --reverse --format='- %s' "origin/$BASE_BRANCH..HEAD"
+              echo
+              sed -n '/^## Checklist/,$p' .github/pull_request_template.md
+              echo
+              echo "_PR aberto automaticamente pelo workflow Auto PR a partir de \`$BRANCH\`._"
+            } > pr-body.md
+
+            url=$(gh pr create --base "$BASE_BRANCH" --head "$BRANCH" --title "$title" \
+              --body-file pr-body.md --assignee "$GITHUB_ACTOR")
+            number=${url##*/}
+            echo "PR criado: $url" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "PR já existente: #$number" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+
+  danger:
+    name: Danger
+    needs: pull-request
+    if: needs.pull-request.outputs.number != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Danger
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ needs.pull-request.outputs.number }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > pr.json
+          jq '{action: "synchronize", number: .number, pull_request: ., repository: .base.repo}' pr.json > "$RUNNER_TEMP/pr-event.json"
+          GITHUB_EVENT_PATH="$RUNNER_TEMP/pr-event.json" npx danger ci --failOnErrors

@@ -1,0 +1,33 @@
+// Tema global do ecossistema MFE (design tokens + reset).
+// Importado pelo styles.scss de TODOS os apps: `@use '../../../packages/shared/styles/theme';`
+// Componentes consomem apenas as variáveis CSS (var(--ef-*)), nunca valores fixos.
+
+:root {
+  --ef-primary: #7c3aed;
+  --ef-surface: #ffffff;
+  --ef-bg: #f8fafc;
+  --ef-text: #111827;
+  --ef-muted: #6b7280;
+  --ef-border: #e5e7eb;
+  --ef-chip: #f3f4f6;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ef-primary: #a78bfa;
+    --ef-surface: #111827;
+    --ef-bg: #0b1120;
+    --ef-text: #e5e7eb;
+    --ef-muted: #9ca3af;
+    --ef-border: #1f2937;
+    --ef-chip: #1f2937;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--ef-bg);
+  color: var(--ef-text);
+  line-height: 1.5;
+}
