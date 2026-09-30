@@ -1,5 +1,6 @@
-// Regras de nomenclatura do fluxo Git — fonte única usada pelos workflows (.github/workflows)
-// e pelo Danger (dangerfile.ts). TypeScript executado direto pelo Node 22 (type stripping). Alterou uma regra? Atualize também docs/09-fluxo-git.md.
+// Regras de nomenclatura do fluxo Git — fonte única usada pelos workflows e pelo Danger.
+// TypeScript executado direto pelo Node 22 (type stripping) e compilado para o pacote npm.
+// Alterou uma regra? Atualize também o README do pacote e docs/09-fluxo-git.md.
 
 /** Branches permanentes: não seguem o padrão de feature. */
 export const PROTECTED_BRANCHES = ['main', 'develop'];

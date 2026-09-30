@@ -1,6 +1,6 @@
-// Teste rápido sem framework: node tools/git-rules/rules.spec.ts
+// Testes sem framework: node packages/danger-rules/src/naming.spec.ts
 import assert from 'node:assert/strict';
-import * as r from './rules.ts';
+import * as r from './naming.ts';
 
 assert.deepEqual(r.validateBranch('feature/remote-certificados'), []);
 assert.deepEqual(r.validateBranch('feature/abc123'), []);
@@ -17,4 +17,4 @@ assert.deepEqual(r.validateFlow('feature/x', 'develop'), []);
 assert.deepEqual(r.validateFlow('develop', 'main'), []);
 assert.equal(r.validateFlow('feature/x', 'main').length, 1);
 assert.equal(r.titleFromBranch('feature/estrutura-inicial-mfe'), 'feat: estrutura inicial mfe');
-console.log('git-rules: ok');
+console.log('naming: ok');
