@@ -168,7 +168,7 @@ export async function elizfabRules(api: DangerApi, options: ElizfabRulesOptions 
 
   // R-05 · Rastreabilidade: PR de feature ligado a uma issue
   if (!isRelease && !/(close[sd]?|fix(e[sd])?|resolve[sd]?|refs?)\s+#\d+/i.test(body)) {
-    warn('R-05 · PR sem issue vinculada. Adicione `Closes #<n>` (fecha a issue no merge) ou `Refs #<n>` na descrição.');
+    warn('R-05 · PR sem issue vinculada. Adicione `Closes #123` (fecha a issue no merge) ou `Refs #123` na descrição.');
   }
 
   // R-06 · Responsável
@@ -222,7 +222,8 @@ export async function elizfabRules(api: DangerApi, options: ElizfabRulesOptions 
       fail(`R-11 · \`${file}\`: teste focado/desabilitado (\`.only\`, \`fit\`, \`xit\`...) adicionado.`);
     }
     if (lines.some((l) => /\bdebugger\b/.test(l))) fail(`R-11 · \`${file}\`: \`debugger\` adicionado.`);
-    if (!/\.spec\./.test(file) && lines.some((l) => /console\.log\(/.test(l))) {
+    // console.log só importa em código de aplicação (src/, apps/); scripts de ferramenta podem logar
+    if (/(^|\/)(src|apps)\//.test(file) && !/\.spec\./.test(file) && lines.some((l) => /console\.log\(/.test(l))) {
       warn(`R-11 · \`${file}\`: \`console.log\` adicionado.`);
     }
   }

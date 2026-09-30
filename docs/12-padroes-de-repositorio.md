@@ -87,7 +87,7 @@ Todo repositório tem, na raiz:
 | R-08 | **Segredos no diff** (tokens GitHub, AWS, chaves privadas, URI MongoDB com senha, `sk-…`) | ❌ |
 | R-09 | Arquivo novo ≥ 500 KB (aviso) / ≥ 5 MB (bloqueio) | ⚠️ / ❌ |
 | R-10 | Dependências sem lockfile; `version` alterada à mão | ❌ / ⚠️ |
-| R-11 | `.only`/`fit`/`xit`/`debugger` (bloqueio); `console.log` (aviso) | ❌ / ⚠️ |
+| R-11 | `.only`/`fit`/`xit`/`debugger` (bloqueio); `console.log` em `src/`/`apps/` (aviso) | ❌ / ⚠️ |
 | R-12 | PR com mais de 1500 linhas | ⚠️ |
 | R-13 | PR de release: prévia da versão que será publicada | ℹ️ |
 | R-14 | Workflows/dangerfile/`elizfab.json` alterados | ℹ️ |
