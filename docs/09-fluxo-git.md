@@ -37,11 +37,11 @@ Onde a regra é aplicada:
    tamanho) em todo push e falha com a explicação do padrão.
 3. **Danger** no PR (ver abaixo).
 
-A regra fica em um único lugar: `tools/git-rules/rules.js`. Para testar localmente:
+A regra fica em um único lugar: `tools/git-rules/rules.ts`. Para testar localmente:
 
 ```bash
-node tools/git-rules/cli.js branch feature/remote-certificados
-node tools/git-rules/cli.js title "feat(shell): adiciona rota de certificados"
+node tools/git-rules/cli.ts branch feature/remote-certificados
+node tools/git-rules/cli.ts title "feat(shell): adiciona rota de certificados"
 ```
 
 ## Commits e título do PR: Conventional Commits
@@ -149,7 +149,7 @@ GITHUB_TOKEN=$(gh auth token) npx danger pr https://github.com/elizfab/mfe-eliza
 
 | Arquivo | Dispara em | Faz |
 | --- | --- | --- |
-| `ci.yml` | push em `main`, `develop`, `feature/**` | `npm ci` → testes do git-rules → `nx run-many -t lint test build`. Check **CI**. |
+| `ci.yml` | push em `main`, `develop`, `feature/**` | `npm ci` → `nx run-many -t lint test build` (inclui os testes do projeto `git-rules`). Check **CI**. |
 | `branch-name.yml` | push em qualquer branch exceto `main`/`develop` | Valida `feature/<nome-da-atividade>`. Check **Branch name**. |
 | `auto-pr.yml` | push em `feature/**` | Valida a branch, cria o PR para `develop` (se não existir) e roda o Danger. Check **Danger**. |
 | `danger.yml` | PR `opened`, `edited`, `reopened`, `ready_for_review` | Danger (PRs abertos à mão, edição de título/descrição). Check **Danger**. |

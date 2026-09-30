@@ -10,7 +10,7 @@ import {
   validateTitle,
   validateFlow,
   isConventionalCommit,
-} from './tools/git-rules/rules';
+} from './tools/git-rules/rules.ts';
 
 const pr = danger.github.pr;
 const head = pr.head.ref;
@@ -72,7 +72,9 @@ async function run() {
   }
 
   // ───────────────────────────── 4. Código esquecido
-  const codeFiles = touched.filter((f) => /\.(ts|js|mjs|html)$/.test(f) && !f.startsWith('tools/git-rules/'));
+  const codeFiles = touched.filter(
+    (f) => /\.(ts|js|mjs|html)$/.test(f) && f !== 'dangerfile.ts' && !f.startsWith('tools/git-rules/'),
+  );
   for (const file of codeFiles) {
     const lines = await addedLines(file);
     if (lines.some((l) => /\b(fdescribe|fit|xit|xdescribe)\(|\b(describe|it|test)\.only\(/.test(l))) {

@@ -1,20 +1,20 @@
 // Regras de nomenclatura do fluxo Git — fonte única usada pelos workflows (.github/workflows)
-// e pelo Danger (dangerfile.ts). Alterou uma regra? Atualize também docs/09-fluxo-git.md.
+// e pelo Danger (dangerfile.ts). TypeScript executado direto pelo Node 22 (type stripping). Alterou uma regra? Atualize também docs/09-fluxo-git.md.
 
 /** Branches permanentes: não seguem o padrão de feature. */
-const PROTECTED_BRANCHES = ['main', 'develop'];
+export const PROTECTED_BRANCHES = ['main', 'develop'];
 
 /** feature/<nome-da-atividade> — kebab-case, minúsculas, números permitidos. */
-const BRANCH_PATTERN = /^feature\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const BRANCH_MAX_LENGTH = 60;
+export const BRANCH_PATTERN = /^feature\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
+export const BRANCH_MAX_LENGTH = 60;
 
 /** Conventional Commits: tipo(escopo opcional)!: descrição */
-const COMMIT_TYPES = ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'];
-const TITLE_PATTERN = new RegExp(`^(${COMMIT_TYPES.join('|')})(\\([a-z0-9-]+\\))?!?: \\S.{8,}$`);
-const TITLE_MAX_LENGTH = 72;
+export const COMMIT_TYPES = ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'];
+export const TITLE_PATTERN = new RegExp(`^(${COMMIT_TYPES.join('|')})(\\([a-z0-9-]+\\))?!?: \\S.{8,}$`);
+export const TITLE_MAX_LENGTH = 72;
 
-function validateBranch(name) {
-  const errors = [];
+export function validateBranch(name: string): string[] {
+  const errors: string[] = [];
   if (PROTECTED_BRANCHES.includes(name)) return errors;
   if (!BRANCH_PATTERN.test(name)) {
     errors.push(
@@ -27,8 +27,8 @@ function validateBranch(name) {
   return errors;
 }
 
-function validateTitle(title) {
-  const errors = [];
+export function validateTitle(title: string): string[] {
+  const errors: string[] = [];
   if (!TITLE_PATTERN.test(title)) {
     errors.push(
       `Título "${title}" fora do padrão Conventional Commits. Use "<tipo>(<escopo>): <descrição>" ` +
@@ -42,33 +42,19 @@ function validateTitle(title) {
 }
 
 /** Fluxo permitido: feature/* → develop, develop → main. */
-function validateFlow(head, base) {
+export function validateFlow(head: string, base: string): string[] {
   if (base === 'develop' && BRANCH_PATTERN.test(head)) return [];
   if (base === 'main' && head === 'develop') return [];
   return [`Fluxo "${head}" → "${base}" não permitido. Use feature/* → develop e develop → main.`];
 }
 
 /** feature/estrutura-inicial-mfe → "feat: estrutura inicial mfe" */
-function titleFromBranch(name) {
+export function titleFromBranch(name: string): string {
   const activity = name.replace(/^feature\//, '').replace(/-/g, ' ');
   return `feat: ${activity}`.slice(0, TITLE_MAX_LENGTH);
 }
 
-function isConventionalCommit(message) {
+export function isConventionalCommit(message: string): boolean {
   const firstLine = message.split('\n')[0];
   return TITLE_PATTERN.test(firstLine) || /^Merge /.test(firstLine);
 }
-
-module.exports = {
-  PROTECTED_BRANCHES,
-  BRANCH_PATTERN,
-  BRANCH_MAX_LENGTH,
-  COMMIT_TYPES,
-  TITLE_PATTERN,
-  TITLE_MAX_LENGTH,
-  validateBranch,
-  validateTitle,
-  validateFlow,
-  titleFromBranch,
-  isConventionalCommit,
-};

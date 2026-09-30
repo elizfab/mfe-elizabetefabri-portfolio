@@ -1,6 +1,6 @@
-// Teste rápido sem framework: node tools/git-rules/rules.spec.js
-const assert = require('node:assert/strict');
-const r = require('./rules');
+// Teste rápido sem framework: node tools/git-rules/rules.spec.ts
+import assert from 'node:assert/strict';
+import * as r from './rules.ts';
 
 assert.deepEqual(r.validateBranch('feature/remote-certificados'), []);
 assert.deepEqual(r.validateBranch('feature/abc123'), []);

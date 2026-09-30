@@ -23,4 +23,4 @@ jobs:
           sparse-checkout: tools/git-rules
 
       - name: Validar feature/<nome-da-atividade>
-        run: node tools/git-rules/cli.js branch "$GITHUB_REF_NAME"
+        run: node tools/git-rules/cli.ts branch "$GITHUB_REF_NAME"

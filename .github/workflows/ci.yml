@@ -32,7 +32,4 @@ jobs:
 
       - run: npm ci
 
-      - name: Regras de nomenclatura (git-rules)
-        run: node tools/git-rules/rules.spec.js
-
       - run: npx nx run-many -t lint test build

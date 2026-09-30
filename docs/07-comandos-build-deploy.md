@@ -130,6 +130,6 @@ O cache do Nx reaproveita builds que não mudaram (a segunda execução é insta
 
 ## CI (`.github/workflows/ci.yml`)
 
-Em cada push em `main`, `develop` e `feature/**`: `npm ci` → testes das regras de nomenclatura →
-`npx nx run-many -t lint test build`. O cache do Nx mantém a execução rápida. Os demais workflows (PR
+Em cada push em `main`, `develop` e `feature/**`: `npm ci` →
+`npx nx run-many -t lint test build` (inclui os testes das regras de nomenclatura, projeto `git-rules`). O cache do Nx mantém a execução rápida. Os demais workflows (PR
 automático, validação de branch, Danger) estão em [09 — Fluxo Git](./09-fluxo-git.md#workflows-githubworkflows).

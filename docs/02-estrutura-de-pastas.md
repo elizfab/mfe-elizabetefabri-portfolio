@@ -17,7 +17,7 @@ mfe-elizabetefabri-portfolio/
 │       └── styles/            # Tema global (design tokens SCSS) — pasta simples, não é projeto Nx
 ├── docs/                      # Esta documentação
 ├── tools/
-│   ├── git-rules/             # Regras de nomenclatura (branch, título de PR, commits) — fonte única
+│   ├── git-rules/             # Projeto Nx: regras de nomenclatura (branch, título de PR, commits) — fonte única
 │   └── ai-migrations/         # Material gerado pelo Nx (guias de migração); não mexer
 ├── .github/                   # Workflows (CI, Auto PR, Danger, branch), template de PR, arquivos de IA do Nx
 ├── dangerfile.ts              # Regras do Danger aplicadas em todo PR
@@ -53,7 +53,7 @@ Pastas geradas automaticamente (no `.gitignore`, **nunca edite**): `node_modules
 | `.prettierrc`, `.prettierignore`, `.editorconfig` | Formatação (aspas simples, 2 espaços, UTF-8). | Raramente. |
 | `.gitignore` | Ignora `node_modules`, `dist`, caches etc. | Raramente. |
 | `dangerfile.ts` | Regras de revisão automática dos PRs (Danger JS). Detalhes em [09](./09-fluxo-git.md#regras-do-danger-dangerfilets). | Ao criar/ajustar regras de PR. |
-| `tools/git-rules/` | `rules.js` (padrões de branch, título e commit), `cli.js` (usado pelos workflows) e `rules.spec.js` (testes). | Ao mudar a convenção de nomes. |
+| `tools/git-rules/` | `rules.ts` (padrões de branch, título e commit), `cli.ts` (usado pelos workflows) e `rules.spec.ts` (testes). | Ao mudar a convenção de nomes. |
 | `AGENTS.md`, `CLAUDE.md`, `opencode.json` | Instruções do Nx para assistentes de IA (usar `nx` para rodar tarefas etc.). | Opcional; pode apagar se não usar. |
 
 ### `.github/`
