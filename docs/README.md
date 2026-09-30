@@ -20,6 +20,7 @@ projetos novos** sem quebrar o que já existe.
 | **Integrar um projeto existente (01–05), item por item**            | [10 — Integração de projetos existentes](./10-integracao-projetos-existentes.md) |
 | Ver se cada projeto está pronto para integrar e o que falta         | [Painel de prontidão](./integracao/README.md)                     |
 | Entender e usar Releases e Packages do GitHub                       | [11 — Releases e Packages](./11-releases-e-packages.md)           |
+| **Padrões que todo repositório da org deve ter e como criar um novo** | [12 — Padrões de repositório](./12-padroes-de-repositorio.md)   |
 
 ## Resumo em 30 segundos
 

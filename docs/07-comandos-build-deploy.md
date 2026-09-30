@@ -128,8 +128,20 @@ O cache do Nx reaproveita builds que não mudaram (a segunda execução é insta
 | Lib compartilhada (`packages/shared/*`) | Shell + todos os remotes afetados (`nx affected`) |
 | Versão de Angular ou outra dependência compartilhada | **Todos** os apps, juntos |
 
+### Imagem Docker (todos os apps em uma origem)
+
+Cada release publica `ghcr.io/elizfab/mfe-elizabetefabri-portfolio:<versão>` (e `:latest`): nginx servindo o shell
+em `/` e cada remote em `/remotes/<nome>/`, com o `mf.manifest.json` gerado para a mesma origem (sem CORS).
+
+```bash
+docker run --rm -p 8080:80 ghcr.io/elizfab/mfe-elizabetefabri-portfolio:latest   # http://localhost:8080
+docker build -t mfe-portfolio .                                                     # build local
+```
+
+Arquivos: `Dockerfile`, `docker/assemble.mjs` (monta o site e o manifesto), `docker/nginx.conf` (SPA + cache).
+
 ## CI (`.github/workflows/ci.yml`)
 
 Em cada push em `main`, `develop` e `feature/**`: `npm ci` →
-`npx nx run-many -t lint test build` (inclui os testes das regras de nomenclatura, projeto `git-rules`). O cache do Nx mantém a execução rápida. Os demais workflows (PR
+`npx nx run-many -t lint test build` (inclui os testes das regras, projeto `danger-rules`). O cache do Nx mantém a execução rápida. Os demais workflows (PR
 automático, validação de branch, Danger) estão em [09 — Fluxo Git](./09-fluxo-git.md#workflows-githubworkflows).

@@ -85,7 +85,8 @@ A documentação completa está em [`docs/`](./docs/README.md):
 8. [Troubleshooting](./docs/08-troubleshooting.md)
 9. [Fluxo Git, PRs automáticos e Danger](./docs/09-fluxo-git.md): `feature/<atividade>` → `develop` → `main`
 10. [**Integração de projetos existentes**](./docs/10-integracao-projetos-existentes.md): runbook item por item + [painel de prontidão](./docs/integracao/README.md) dos projetos 01–05
-11. [Releases e Packages](./docs/11-releases-e-packages.md)
+11. [Releases e Packages](./docs/11-releases-e-packages.md): release automática, pacotes npm e imagem Docker
+12. [**Padrões de repositório**](./docs/12-padroes-de-repositorio.md): o que todo repositório da org deve ter e como criar um novo
 
 > Alternativa moderna ao Module Federation clássico: **Native Federation**
 > (`@angular-architects/native-federation`), com ESM nativo e esbuild, sem Webpack. O modelo

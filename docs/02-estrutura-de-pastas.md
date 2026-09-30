@@ -12,15 +12,18 @@ mfe-elizabetefabri-portfolio/
 │   ├── about/                 # REMOTE — página Sobre
 │   └── contact/               # REMOTE — página Contato
 ├── packages/                  # Código compartilhado entre os apps
+│   ├── danger-rules/          # PACOTE npm @elizfab/danger-rules — regras de PR, padrões de repo, CLI
 │   └── shared/
-│       ├── data/              # LIB Nx — modelos TypeScript + dados do portfólio
+│       ├── data/              # LIB Nx — modelos + dados (também publicada como @elizfab/shared-data)
 │       └── styles/            # Tema global (design tokens SCSS) — pasta simples, não é projeto Nx
 ├── docs/                      # Esta documentação
-├── tools/
-│   ├── git-rules/             # Projeto Nx: regras de nomenclatura (branch, título de PR, commits) — fonte única
-│   └── ai-migrations/         # Material gerado pelo Nx (guias de migração); não mexer
+├── docker/                    # assemble.mjs (monta o site) + nginx.conf da imagem Docker
+├── tools/ai-migrations/       # Material gerado pelo Nx (guias de migração); não mexer
 ├── .github/                   # Workflows (CI, Auto PR, Danger, branch), template de PR, arquivos de IA do Nx
-├── dangerfile.ts              # Regras do Danger aplicadas em todo PR
+├── dangerfile.ts              # Danger: regras da org (pacote) + regras do MFE (M-xx)
+├── elizfab.json               # Identidade do repositório (tipo mfe-host) para os padrões P-xx
+├── Dockerfile / .dockerignore # Imagem do portfólio (shell + remotes) publicada no ghcr.io
+├── .nvmrc                     # Node 22
 ├── .vscode/                   # Extensões recomendadas e debug (local: ignorada pelo gitignore global)
 ├── .agents/ .claude/ .codex/ .cursor/ .gemini/ .opencode/
 │                              # Configurações de assistentes de IA geradas pelo Nx (opcionais)
@@ -53,7 +56,9 @@ Pastas geradas automaticamente (no `.gitignore`, **nunca edite**): `node_modules
 | `.prettierrc`, `.prettierignore`, `.editorconfig` | Formatação (aspas simples, 2 espaços, UTF-8). | Raramente. |
 | `.gitignore` | Ignora `node_modules`, `dist`, caches etc. | Raramente. |
 | `dangerfile.ts` | Regras de revisão automática dos PRs (Danger JS). Detalhes em [09](./09-fluxo-git.md#regras-do-danger-dangerfilets). | Ao criar/ajustar regras de PR. |
-| `tools/git-rules/` | `rules.ts` (padrões de branch, título e commit), `cli.ts` (usado pelos workflows) e `rules.spec.ts` (testes). | Ao mudar a convenção de nomes. |
+| `packages/danger-rules/` | Pacote `@elizfab/danger-rules`: `naming.ts`, `version.ts`, `standards.ts`, `danger.ts`, `cli.ts` e testes. Ver [12](./12-padroes-de-repositorio.md). | Ao mudar regras da org. |
+| `elizfab.json` | Tipo do repositório (`mfe-host`) e exceções aos padrões. | Raramente. |
+| `.github/workflows/release.yml` | Release automática: versão, tag, notas, pacotes npm e imagem Docker. | Ao mudar o que é publicado. |
 | `AGENTS.md`, `CLAUDE.md`, `opencode.json` | Instruções do Nx para assistentes de IA (usar `nx` para rodar tarefas etc.). | Opcional; pode apagar se não usar. |
 
 ### `.github/`

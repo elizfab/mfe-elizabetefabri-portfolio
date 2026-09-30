@@ -37,11 +37,11 @@ Onde a regra é aplicada:
    tamanho) em todo push e falha com a explicação do padrão.
 3. **Danger** no PR (ver abaixo).
 
-A regra fica em um único lugar: `tools/git-rules/rules.ts`. Para testar localmente:
+A regra fica em um único lugar: `packages/danger-rules/src/naming.ts` (pacote `@elizfab/danger-rules`). Para testar localmente:
 
 ```bash
-node tools/git-rules/cli.ts branch feature/remote-certificados
-node tools/git-rules/cli.ts title "feat(shell): adiciona rota de certificados"
+node packages/danger-rules/src/cli.ts branch feature/remote-certificados
+node packages/danger-rules/src/cli.ts title "feat(shell): adiciona rota de certificados"
 ```
 
 ## Commits e título do PR: Conventional Commits
@@ -102,49 +102,30 @@ Novos pushes na mesma branch **não** abrem outro PR: o workflow reaproveita o e
 
 ## Regras do Danger (`dangerfile.ts`)
 
-### Bloqueiam o merge (`fail`)
+O `dangerfile.ts` roda em duas camadas:
 
-| Regra | Motivo |
-| --- | --- |
-| Fluxo diferente de `feature/*→develop` ou `develop→main` | Mantém o Git Flow simplificado |
-| Branch fora de `feature/<nome-da-atividade>` (PRs para `develop`) | Padronização |
-| Título fora de Conventional Commits ou com mais de 72 caracteres | Histórico e changelog legíveis |
-| Descrição com menos de 50 caracteres | Todo PR explica o que muda e por quê |
-| `package.json` com dependências alteradas sem `package-lock.json` | Build reprodutível (`npm ci`) |
-| Script `run:all` no `package.json` | Recolocado pelo gerador do MF; não funciona no Nx |
-| `.only`, `fit`, `fdescribe`, `xit`, `xdescribe` adicionados | Evita desligar testes sem querer |
-| `debugger` adicionado | Código de depuração esquecido |
-| Remote novo sem manifesto, rota no shell, `scope` no ESLint, script `start:<nome>` e docs | Checklist do cenário B ([05](./05-adicionar-projetos.md)) |
-| Import direto de outro app (`apps/x` → `apps/y`) | Remotes se integram só em runtime |
+1. **Regras da organização** — pacote [`@elizfab/danger-rules`](../packages/danger-rules/README.md): regras de PR
+   **R-01…R-14** (fluxo, nomenclatura, descrição, issue vinculada, segredos, arquivos grandes, dependências, código
+   esquecido, prévia de release) e **padrões de repositório P-01…P-22**. Tabelas completas em
+   [12 — Padrões de repositório](./12-padroes-de-repositorio.md).
+2. **Regras do MFE (M-xx)**, só deste repositório:
 
-### Avisos (`warn`)
-
-| Regra | Motivo |
-| --- | --- |
-| `console.log` adicionado em `apps/`/`packages/` | Ruído no console de produção |
-| Cor fixa (`#hex`, `rgb()`) em arquivos de `apps/` | Usar tokens `var(--ef-*)` do tema |
-| Código TS alterado sem nenhum `*.spec.ts` alterado | Incentivar testes |
-| Template da descrição não preenchido (`<!-- TODO`) | Descrição completa |
-| `package-lock.json` alterado sem `package.json` | Verificar se foi intencional |
-| Projeto Nx novo sem mudança em `docs/` | Documentação em dia |
-| PR com mais de 1500 linhas (fora o lockfile) | Incentivar PRs menores |
-| Commits fora de Conventional Commits | Histórico padronizado |
-| PR sem responsável | Rastreabilidade |
+| ID | Regra | Nível |
+| --- | --- | --- |
+| M-01 | Remote novo com manifesto, rota no shell, `scope` no ESLint, script `start:<nome>`, docs e nome sem hífen | ❌ |
+| M-02 | Import direto de outro app (`apps/x` → `apps/y`) | ❌ |
+| M-03 | Cor fixa (`#hex`, `rgb()`) em `apps/` — usar tokens `var(--ef-*)` | ⚠️ |
+| M-04 | Asset de remote com caminho relativo — usar `/assets/<remote>/...` | ⚠️ |
+| M-05 | Código TS alterado sem nenhum `*.spec.ts` | ⚠️ |
+| M-06 | Lembretes de deploy: manifesto, lib compartilhada, dependências | ℹ️ |
+| M-07 | Projeto Nx novo sem mudança em `docs/` | ⚠️ |
 
 ### Automação de labels
 
 Com o título válido, o Danger aplica a label `tipo:<tipo>` (ex.: `tipo:feat`) e remove outras `tipo:*`. Essas labels
 organizam as notas de release ([11](./11-releases-e-packages.md)).
 
-### Lembretes (`message`)
-
-- `mf.manifest.json` alterado → atualizar o manifesto de **produção**.
-- `packages/shared/*` alterado → publicar shell + remotes afetados (lib singleton em runtime).
-- Dependências alteradas → publicar todos os apps juntos.
-- Workflows, dangerfile ou `tools/git-rules` alterados → revisar a automação com atenção.
-
-Para adicionar uma regra, edite `dangerfile.ts` (e esta tabela). Para testar contra um PR existente, sem
-comentar nele:
+Para testar o Danger contra um PR existente, sem comentar nele:
 
 ```bash
 GITHUB_TOKEN=$(gh auth token) npx danger pr https://github.com/elizfab/mfe-elizabetefabri-portfolio/pull/<n>
@@ -154,11 +135,12 @@ GITHUB_TOKEN=$(gh auth token) npx danger pr https://github.com/elizfab/mfe-eliza
 
 | Arquivo | Dispara em | Faz |
 | --- | --- | --- |
-| `ci.yml` | push em `main`, `develop`, `feature/**` | `npm ci` → `nx run-many -t lint test build` (inclui os testes do projeto `git-rules`). Check **CI**. |
+| `ci.yml` | push em `main`, `develop`, `feature/**` | `npm ci` → `nx run-many -t lint test build` (inclui os testes do projeto `danger-rules`). Check **CI**. |
 | `branch-name.yml` | push em qualquer branch exceto `main`/`develop` | Valida `feature/<nome-da-atividade>`. Check **Branch name**. |
 | `auto-pr.yml` | push em `feature/**` | Valida a branch, cria o PR para `develop` (se não existir) e roda o Danger. Check **Danger**. |
 | `danger.yml` | PR `opened`, `edited`, `reopened`, `ready_for_review` | Danger (PRs abertos à mão, edição de título/descrição). Check **Danger**. |
 | `danger-release.yml` | PR para `main` com novo commit (`synchronize`) | Danger nos PRs de release. Check **Danger**. |
+| `release.yml` | push em `main` (merge do PR de release) | Calcula a versão, cria tag + release e publica pacotes npm e imagem Docker ([11](./11-releases-e-packages.md)). |
 
 Por que o CI roda em `push` e não em `pull_request`: PRs criados pelo `GITHUB_TOKEN` (Auto PR) **não disparam**
 outros workflows. Como o check fica no SHA do commit, o resultado do push vale para o PR. Pelo mesmo motivo,

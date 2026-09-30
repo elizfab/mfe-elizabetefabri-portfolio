@@ -54,3 +54,7 @@ vitest.config.*.timestamp*
 .nx/polygraph
 .nx/self-healing
 .nx/migrate-runs
+# ambiente (nunca versionar segredos; use .env.example)
+.env
+.env.*
+!.env.example

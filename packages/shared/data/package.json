@@ -1,0 +1,28 @@
+{
+  "name": "@elizfab/shared-data",
+  "version": "0.0.0",
+  "description": "Modelos (Project, Profile) e dados do portfólio de Elizabete Fabri, compartilhados entre o host e os remotes do MFE.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.publish.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elizfab/mfe-elizabetefabri-portfolio.git",
+    "directory": "packages/shared/data"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "license": "UNLICENSED"
+}
