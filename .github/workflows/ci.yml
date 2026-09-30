@@ -1,0 +1,38 @@
+# Lint, testes e build de todos os projetos.
+# Roda em push (não em pull_request): o check fica no SHA do commit e vale para o PR
+# — inclusive para PRs abertos automaticamente pelo auto-pr.yml, que não disparam eventos de pull_request.
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Regras de nomenclatura (git-rules)
+        run: node tools/git-rules/rules.spec.js
+
+      - run: npx nx run-many -t lint test build
