@@ -94,6 +94,16 @@ async function addedLines(api: DangerApi, file: string): Promise<string[]> {
     .map((l) => l.slice(1));
 }
 
+async function addLabel(api: DangerApi, label: string) {
+  const { pr, thisPR } = api.danger.github;
+  if (pr.labels?.some((l) => l.name === label)) return;
+  try {
+    await api.danger.github.api.issues.addLabels({ owner: thisPR.owner, repo: thisPR.repo, issue_number: thisPR.number, labels: [label] });
+  } catch {
+    // label inexistente: sem efeito (scripts/setup-repo.sh cria as labels)
+  }
+}
+
 async function syncTypeLabel(api: DangerApi) {
   const { pr, thisPR } = api.danger.github;
   const type = pr.title.match(/^([a-z]+)/)?.[1];
@@ -160,6 +170,7 @@ export async function elizfabRules(api: DangerApi, options: ElizfabRulesOptions 
   const titleErrors = validateTitle(pr.title);
   titleErrors.forEach((e) => fail(`R-03 · ${e}`));
   if (!titleErrors.length) await syncTypeLabel(api);
+  if (isRelease) await addLabel(api, 'ignorar-release'); // o PR de release não é uma mudança: fica fora das notas
 
   // R-04 · Descrição
   const body = (pr.body ?? '').trim();
@@ -195,7 +206,7 @@ export async function elizfabRules(api: DangerApi, options: ElizfabRulesOptions 
 
   // R-09 · Arquivos grandes
   const { stat } = await import('node:fs/promises');
-  for (const file of created) {
+  for (const file of created.filter((f) => !LOCKFILES.test(f))) {
     const size = await stat(`${root}/${file}`).then((s) => s.size, () => 0);
     if (size >= largeFileFail) fail(`R-09 · \`${file}\` tem ${(size / 1e6).toFixed(1)} MB. Arquivos grandes não vão para o Git (otimize ou use armazenamento externo).`);
     else if (size >= largeFileWarn) warn(`R-09 · \`${file}\` tem ${(size / 1e3).toFixed(0)} KB. Otimize (ex.: imagens em WebP/SVG).`);
